@@ -12,15 +12,12 @@ public class Game {
 	private int EndDate_;
 	private TeamStanding[] TeamStandings_;
 	private Match[] Matches_;
-	private Game Parent_;
-	private ArrayList<Game> Children_;
+	private String[] Parent_;
+	private ArrayList<String[]> Children_;
 	private Boolean loadedCache = false;
 	
 	public void loadCache()
 	{
-		System.out.print("Parent - ");
-		System.out.println(Parent_);
-		
 		String Url = FrcDbConstants.UrlBase;
 		Url += String.format(FrcDbConstants.UrlGame, EventShortName_);
 		JSONObject g = null;
@@ -28,6 +25,20 @@ public class Game {
 		try {
 			g = new JSONObject(FrcDbConstants.getHtml(Url));
 		} catch (Exception e) { e.printStackTrace(); }
+		
+		// Load Parent 
+		try
+		{
+			if(!g.isNull("parent"))
+			{
+				JSONObject parent = g.getJSONObject("parent");
+					
+				Parent_ = new String[2];
+				Parent_[0] = parent.getString("name");
+				Parent_[1] = String.valueOf(parent.getInt("year"));
+				
+			}
+		} catch (Exception ex) { ex.printStackTrace(); }
 		
 		// Load Children
 		try
@@ -38,11 +49,9 @@ public class Game {
 				{
 					JSONObject child = g.getJSONArray("children").getJSONObject(x);
 					
-					Game c = new Game();
-					c.setEventShortName(child.getString("name"));
-					c.setGameYear(child.getInt("year"));
-					c.setParent(this);
-					c.loadCache();
+					String[] c = new String[2];
+					c[0] = child.getString("name");
+					c[1] = String.valueOf(child.getInt("year"));
 					
 					Children_.add(c);
 				}
@@ -152,17 +161,17 @@ public class Game {
 	public Match[] getMatches() {
 		return Matches_;
 	}
-	public ArrayList<Game> getChildren() {
+	public ArrayList<String[]> getChildren() {
 		return Children_;
 	}
-	public Game getParent() {
+	public String[] getParent() {
 		return Parent_;
 	}
 	
-	public void setParent(Game parent_) {
+	public void setParent(String[] parent_) {
 		Parent_ = parent_;
 	}
-	public void setChildren(ArrayList<Game> children_) {
+	public void setChildren(ArrayList<String[]> children_) {
 		Children_ = children_;
 	}
 	public void setEventShortName(String eventShortName_) {

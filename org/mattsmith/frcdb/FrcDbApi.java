@@ -55,7 +55,7 @@ public class FrcDbApi
 		}
 		catch (Exception e) { e.printStackTrace(); }
 		
-		/* try
+		try
 		{
 			String teams = getHtml(FrcDbConstants.UrlBase + FrcDbConstants.UrlTeams);
 			JSONArray Teams = new JSONArray(teams);
@@ -80,7 +80,7 @@ public class FrcDbApi
 				CachedTeams_[i] = e;
 			}
 		}
-		catch (Exception e) { e.printStackTrace(); }*/
+		catch (Exception e) { e.printStackTrace(); }
 	}
 	
 	private static String getHtml(String urlToRead) 
