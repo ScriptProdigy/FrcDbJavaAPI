@@ -8,6 +8,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 public class FrcDbConstants {
+	public static Double Version = 0.1;
+	public static int DefaultYear = 2012;
+	
 	public static String UrlBase = "http://api.frcdb.net/";
 	
 	public static String UrlEvents = "events.json";

@@ -13,17 +13,6 @@ public class FrcDbApi
 	private static Event[] CachedEvents_ = null;
 	private static Team[] CachedTeams_ = null;
 	
-	public FrcDbApi()
-	{
-		buildCache();
-	}
-	
-	public FrcDbApi(Boolean load_cache) 
-	{ 
-		if(load_cache)
-			buildCache();
-	}
-	
 	public static void buildCache()
 	{
 		try
@@ -101,10 +90,44 @@ public class FrcDbApi
 		return null;
 	}
 	
-	public static Event[] getEvents() 
+	public static Event[] getEvents()
+	{
+		return getEvents(FrcDbConstants.DefaultYear);
+	}
+	
+	public static Event[] getEvents(int year) 
 	{ 
 		if(CachedEvents_ == null)
 			buildCache();
+		
+		int Count = 0;
+		for(Event e : CachedEvents_)
+		{
+			for(int y : e.getYears())
+			{
+				if(y == year)
+				{
+					Count += 1;
+					break;
+				}
+			}
+		}
+		
+
+		Event[] retEvent = new Event[Count];
+		Count = 0;
+		for(Event e : CachedEvents_)
+		{
+			for(int y : e.getYears())
+			{
+				if(y == year)
+				{
+					Count += 1;
+					retEvent[Count] = e;
+					break;
+				}
+			}
+		}
 		
 		return CachedEvents_; 
 	}
@@ -117,5 +140,48 @@ public class FrcDbApi
 		return CachedTeams_; 
 	}
 	
+	public static Team[] getTeamsAtGame(Game g)
+	{
+		return getTeamsAtEvent(getEventByShortname(g.getEventShortName()), g.getGameYear());
+	}
 	
+	public static Team[] getTeamsAtEvent(Event e, int year)
+	{
+		Team[] ret = new Team[e.getGame(year).getTeamStandings().length];
+		
+		int x = 0;
+		for(TeamStanding ts : e.getGame(year).getTeamStandings())
+		{
+			ret[x] = getTeamFromTeamStanding(ts);
+			x += 1;
+		}
+		
+		return ret;
+	}
+	
+	public static Event getEventByShortname(String shortname)
+	{
+		for(Event e : CachedEvents_)
+		{
+			if(e.getShortName().contains(shortname))
+				return e;
+		}
+		return null;
+	}
+	
+	public static Team getTeamFromTeamStanding(TeamStanding ts)
+	{
+		for(Team t : CachedTeams_)
+		{
+			if(t.getNumber() == ts.getNumber())
+				return t;
+		}
+		return null;
+	}
+	
+	
+	public static Double getVersion()
+	{
+		return FrcDbConstants.Version;
+	}
 }
